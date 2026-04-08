@@ -1,11 +1,13 @@
 Due date: This project is due on Thursday, April 9th, 2026 at 10:00 pm. (See late submission policy for this project at the end of this page.)
 Group Project: This is a group project. Students must work in groups of 3 students.
 Please do not split the project in a way that each student does only a portion of the work. Instead each student is expected to work on the entire project individually and then meet with the group to clarify doubts, share findings, and combine the project solutions into one group report. The quizzes and exams will test you individually on what you learned on this Project.
+
 Only one submission per group (see a description of the required submission files below).
 Help or assistance from other groups, other people, or online resources is NOT allowed.
 Study Chapter 3, Sections 4.10.1, 4.10.2, 4.10.6 and Appendix D (online)Links to an external site. of the textbook in great detail.
 Study all the materials posted on the course Lecture Notes:
 Prediction: which includes Classification, Regression, and Evaluation of Models
+
 In particular, you should know the algorithms to construct decision trees, regression trees, and model trees very well, and be able to use these algorithms to construct trees from data by hand during quizzes and exams. 
 THOROUGHLY READ AND FOLLOW THE PROJECT GUIDELINES. These guidelines contain detailed information about how to structure your project, how to prepare your written report and how to prepare your project highlights for in-class discussion.
 *** You must use the Project 2 Template Download Project 2 Templateprovided here for your written report. Do NOT change the structure of the report, do NOT exceed the page limits stated in the template and do NOT decrease the font size ***. (If you prefer not to use Word, you can copy and paste this format in a different editor as long as you respect the stated page structure and page limit.)
@@ -22,6 +24,7 @@ Reflect on the content of (i.e., the course material covered in) this project. T
 (c) What are the top 2 things you learned about the data domain (i.e., stroke) from uncovering patterns from this dataset? 
 
 (d) What are the top 3 things you want to learn more about the topic covered by this project?
+
 Reflect now on how you worked on this project:
 (e) If you could start working on this project again, what would you do differently?
 Data Mining Technique(s): Run all project experiments in Python, using the following techniques:
