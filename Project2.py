@@ -5,4 +5,7 @@ import pandas as pd
 df = pd.read_csv("healthcare-dataset-stroke-data.csv")
 df.head()
 
+df = df
+
+df = df.drop(columns=["id"])
 df["bmi"] = df["bmi"].fillna(df["bmi"].mean())
