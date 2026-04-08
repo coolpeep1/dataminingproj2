@@ -9,3 +9,4 @@ df = df
 
 df = df.drop(columns=["id"])
 df["bmi"] = df["bmi"].fillna(df["bmi"].mean())
+df = pd.get_dummies(df, drop_first=True)
