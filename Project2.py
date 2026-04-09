@@ -1,11 +1,12 @@
 import numpy as np
 import pandas as pd
-from sklearn.dummy import DummyRegressor
+from sklearn.dummy import DummyClassifier, DummyRegressor
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import mean_squared_error, mean_absolute_error
+from sklearn.metrics import accuracy_score, classification_report, mean_squared_error, mean_absolute_error, precision_score, recall_score
 from sklearn.linear_model import LinearRegression
-from sklearn.tree import DecisionTreeRegressor
-from sklearn.model_selection import cross_val_predict
+from sklearn.tree import DecisionTreeClassifier, DecisionTreeRegressor
+from sklearn.model_selection import cross_validate, cross_val_predict
+from sklearn.ensemble import RandomForestClassifier
 
 # load the dataset
 df = pd.read_csv("healthcare-dataset-stroke-data.csv")
@@ -19,6 +20,50 @@ df = df.drop(columns=["id"])
 df["bmi"] = df["bmi"].fillna(df["bmi"].mean())
 # converted categorical variables to dummy variables
 df = pd.get_dummies(df, drop_first=True)
+
+# Classification Techniques
+
+# preprocessing the data for classification - removed id and converted categorical variables to numbers
+df_clf = pd.read_csv("healthcare-dataset-stroke-data.csv")
+df_clf = df_clf.drop(columns=["id"])
+df_clf = pd.get_dummies(df_clf, drop_first=True)
+
+# features and target
+X_clf = df_clf.drop(columns=["stroke"])
+y_clf = df_clf["stroke"]
+
+# split data
+X_train_clf, X_test_clf, y_train_clf, y_test_clf = train_test_split(X_clf, y_clf, random_state=42)
+
+# DummyClassifier with the most frequent strategy
+dummy_clf = DummyClassifier(strategy="most_frequent")
+dummy_clf.fit(X_train_clf, y_train_clf)
+y_pred_clf = dummy_clf.predict(X_test_clf)
+
+print("\nDummy Classifier (Most Frequent) Results:")
+print("Accuracy:", accuracy_score(y_test_clf, y_pred_clf))
+print("Precision:", precision_score(y_test_clf, y_pred_clf))
+print("Recall:", recall_score(y_test_clf, y_pred_clf))
+
+# decision Tree Classifier
+tree_clf = DecisionTreeClassifier(criterion="gini", random_state=42)
+tree_clf.fit(X_train_clf, y_train_clf)
+y_pred_tree_clf = tree_clf.predict(X_test_clf)
+
+print("\nDecision Tree (Gini)) Results:")
+print("Accuracy:", accuracy_score(y_test_clf, y_pred_tree_clf))
+print("Classification Report:\n", classification_report(y_test_clf, y_pred_tree_clf))
+
+# decision Tree Classifier with the entropy criterion
+tree_clf_entropy = DecisionTreeClassifier(criterion="entropy", random_state=42)
+tree_clf_entropy.fit(X_train_clf, y_train_clf)
+y_pred_clf_entropy = tree_clf_entropy.predict(X_test_clf)
+
+print("\nDecision Tree (Entropy) Results:")
+print("Accuracy:", accuracy_score(y_test_clf, y_pred_clf_entropy))
+print("Classification Report:\n", classification_report(y_test_clf, y_pred_clf_entropy))
+
+# max_depth
 
 # Regression Techniques
 
