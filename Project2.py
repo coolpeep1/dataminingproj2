@@ -1,5 +1,10 @@
 import numpy as np
 import pandas as pd
+from sklearn.dummy import DummyRegressor, DummyClassifier
+from sklearn.ensemble import RandomForestRegressor, RandomForestClassifier
+from sklearn.linear_model import LinearRegression
+from sklearn.tree import DecisionTreeClassifier
+
 
 # load the dataset
 df = pd.read_csv("healthcare-dataset-stroke-data.csv")
