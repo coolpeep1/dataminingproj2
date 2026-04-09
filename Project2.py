@@ -21,24 +21,29 @@ df = pd.get_dummies(df, drop_first=True)
 
 # Majority Class Classifier:
 
-# pre-processing the data for regression
+# pre-processing the data for regression - reomved id, dropped rows with missing bmi values, and converted categorical variables to numbers
 df_reg = pd.read_csv("healthcare-dataset-stroke-data.csv")
 df_reg = df_reg.drop(columns=["id"])
 df_reg = df_reg.dropna(subset=["bmi"])
 df_reg = pd.get_dummies(df_reg, drop_first=True)
 
+# X is the feature set and y is the target variable
 X = df_reg.drop(columns=["bmi"])
 y = df_reg["bmi"]
 
 X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=42)
 
+# predicts the average bmi value for all instances in the test set
 dummy_regr = DummyRegressor(strategy="mean")
 dummy_regr.fit(X_train, y_train)
+# makes predictions of the test data
 y_pred = dummy_regr.predict(X_test)
 
+# calculates the RMSE and MAE for the Dummy Regressor
 rmse = np.sqrt(mean_squared_error(y_test, y_pred))
 mae = mean_absolute_error(y_test, y_pred)
 
+# prints results
 print("\nDummy Regressor Results:")
 print("RMSE:", rmse)
 print("MAE:", mae)
