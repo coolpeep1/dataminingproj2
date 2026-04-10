@@ -90,7 +90,7 @@ for split in split_values:
 X_cls = df.drop(columns=["stroke"])
 y_cls = df["stroke"]
 
-X_train_cls, X_test_cls, y_train_cls, y_test_cls = train_test_split( X_cls, y_cls, test_size=0.2, random_state=42, stratify=y_cls)
+X_train_cls, X_test_cls, y_train_cls, y_test_cls = train_test_split(X_cls, y_cls, test_size=0.2, random_state=42, stratify=y_cls)
 
 def evaluate_classification_model(model_name, model):
     start = time.time()
@@ -208,6 +208,37 @@ print("\nDecision Tree Regressor Results (10-fold CV):")
 print("RMSE:", tree_rmse)
 print("MAE:", tree_mae)
 print("Correlation Coefficient:", tree_correlation)
+
+# Experiment 2: Decision Tree (max_depth = 5)
+tree_reg_5 = DecisionTreeRegressor(max_depth=5, random_state=42)
+
+tree_y_pred = cross_val_predict(tree_reg_5, X, y, cv=10)
+
+print("\nDecision Tree (max_depth=5):")
+print("RMSE:", np.sqrt(mean_squared_error(y, tree_y_pred)))
+print("MAE:", mean_absolute_error(y, tree_y_pred))
+print("Correlation:", np.corrcoef(y, tree_y_pred)[0, 1])
+
+# Experiment 3: Decision Tree (max_depth = 10)
+tree_reg_10 = DecisionTreeRegressor(max_depth=10, random_state=42)
+
+tree_y_pred = cross_val_predict(tree_reg_10, X, y, cv=10)
+
+print("\nDecision Tree (max_depth=10):")
+print("RMSE:", np.sqrt(mean_squared_error(y, tree_y_pred)))
+print("MAE:", mean_absolute_error(y, tree_y_pred))
+print("Correlation:", np.corrcoef(y, tree_y_pred)[0, 1])
+
+# Experiment 4: Decision Tree (max_depth = 20)
+tree_reg_20 = DecisionTreeRegressor(max_depth=20, random_state=42)
+
+tree_y_pred = cross_val_predict(tree_reg_20, X, y, cv=10)
+
+print("\nDecision Tree (max_depth=20):")
+print("RMSE:", np.sqrt(mean_squared_error(y, tree_y_pred)))
+print("MAE:", mean_absolute_error(y, tree_y_pred))
+print("Correlation:", np.corrcoef(y, tree_y_pred)[0, 1])
+
 # random forest regressor:
 
 def evaluate_regression_model(model_name, model):
