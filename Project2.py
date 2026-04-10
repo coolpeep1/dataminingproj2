@@ -9,6 +9,9 @@ from sklearn.metrics import (mean_squared_error, mean_absolute_error, recall_sco
                              accuracy_score, precision_score, recall_score, roc_auc_score,
                             confusion_matrix)
 import time
+from sklearn.pipeline import make_pipeline
+from sklearn.preprocessing import StandardScaler
+
 # load the dataset
 df = pd.read_csv("healthcare-dataset-stroke-data.csv")
 print(df.head())
@@ -173,6 +176,20 @@ print("\nLinear Regression Results:")
 print("RMSE:", linear_rmse)
 print("MAE:", linear_mae)
 print("Correlation Coefficient:", linear_correlation)
+
+# Experiment 2 - Linear Regression with Scaling:
+linear_reg_scaled = make_pipeline(StandardScaler(), LinearRegression())
+
+linear_y_pred_scaled = cross_val_predict(linear_reg_scaled, X, y, cv=10)
+
+linear_rmse_scaled = np.sqrt(mean_squared_error(y, linear_y_pred_scaled))
+linear_mae_scaled = mean_absolute_error(y, linear_y_pred_scaled)
+linear_corr_scaled = np.corrcoef(y, linear_y_pred_scaled)[0, 1]
+
+print("\nLinear Regression with Scaling Results:")
+print("RMSE:", linear_rmse_scaled)
+print("MAE:", linear_mae_scaled)
+print("Correlation Coefficient:", linear_corr_scaled)
 
 # Regression Trees:
 
