@@ -208,3 +208,36 @@ print("\nDecision Tree Regressor Results (10-fold CV):")
 print("RMSE:", tree_rmse)
 print("MAE:", tree_mae)
 print("Correlation Coefficient:", tree_correlation)
+# random forest regressor:
+
+def evaluate_regression_model(model_name, model):
+    start = time.time()
+    #  10-fold cross validation
+    y_pred_cv = cross_val_predict(model, X, y, cv=10)
+    train_time = time.time() - start
+
+    # calculates  RMSE and MAE 
+    rmse = np.sqrt(mean_squared_error(y, y_pred_cv))
+    mae = mean_absolute_error(y, y_pred_cv)
+    #  correlation coefficient
+    correlation = np.corrcoef(y, y_pred_cv)[0, 1]
+
+    print(f"\n{model_name}")
+    print("RMSE:", round(rmse, 4))
+    print("MAE:", round(mae, 4))
+    print("Correlation Coefficient", round(correlation, 4))
+    print("Time to construct (sec):", round(train_time, 4))
+
+#basic random forest regressor
+rf_reg_default = RandomForestRegressor(random_state=42)
+evaluate_regression_model("Default Random Forest Regressor ", rf_reg_default)
+
+#experiment 1: varied n_estimators 
+for n in [100, 200, 300, 500]:
+    rf_reg_n = RandomForestRegressor(n_estimators=n, random_state=42)
+    evaluate_regression_model(f"Random Forest Regressor, n_estimators={n}", rf_reg_n)
+
+#experiment 2: varied max_depth 
+for depth in [None, 5, 10, 20]:
+    rf_reg_depth = RandomForestRegressor(max_depth=depth, random_state=42)
+    evaluate_regression_model(f"Random Forest Regressor, max_depth={depth}", rf_reg_depth)

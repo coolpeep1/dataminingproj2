@@ -98,7 +98,7 @@ Run all experiments in **Python** using the following techniques:
 #### Regression Trees - ANGELA
 - Use `DecisionTreeRegressor` from `sklearn.tree`
 
-#### Random Forests (Regression)
+#### Random Forests (Regression) - SHRIYA 
 - Use `RandomForestRegressor` from `sklearn.ensemble`
 - Experiment with (one at a time, others at default):
   - `n_estimators`: default (`100`), then determine a good value based on results
