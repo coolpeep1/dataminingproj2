@@ -5,7 +5,12 @@ from sklearn.ensemble import RandomForestRegressor, RandomForestClassifier
 from sklearn.linear_model import LinearRegression
 from sklearn.tree import DecisionTreeClassifier, DecisionTreeRegressor
 from sklearn.model_selection import train_test_split, cross_val_predict, cross_val_score
-from sklearn.metrics import accuracy_score, classification_report, mean_squared_error, mean_absolute_error, precision_score, recall_score
+from sklearn.metrics import (mean_squared_error, mean_absolute_error, recall_score, classification_report,
+                             accuracy_score, precision_score, recall_score, roc_auc_score,
+                            confusion_matrix)
+import time
+from sklearn.pipeline import make_pipeline
+from sklearn.preprocessing import StandardScaler
 
 # load the dataset
 df = pd.read_csv("healthcare-dataset-stroke-data.csv")
@@ -80,10 +85,51 @@ for split in split_values:
     scores = cross_val_score(tree_clf_split, X_clf, y_clf, cv=10, scoring="accuracy")
     print(f"Min Samples Split={split}, Accuracy={scores.mean():.4f}")
 
+# random forests
+
+X_cls = df.drop(columns=["stroke"])
+y_cls = df["stroke"]
+
+X_train_cls, X_test_cls, y_train_cls, y_test_cls = train_test_split(X_cls, y_cls, test_size=0.2, random_state=42, stratify=y_cls)
+
+def evaluate_classification_model(model_name, model):
+    start = time.time()
+    model.fit(X_train_cls, y_train_cls)
+    train_time = time.time() - start
+
+    y_pred = model.predict(X_test_cls)
+    y_prob = model.predict_proba(X_test_cls)[:, 1]
+
+    print(f"\n{model_name}")
+    print("Accuracy:", round(accuracy_score(y_test_cls, y_pred), 4))
+    print("Precision:", round(precision_score(y_test_cls, y_pred, zero_division=0), 4))
+    print("Recall:", round(recall_score(y_test_cls, y_pred, zero_division=0), 4))
+    print("Area under curve:", round(roc_auc_score(y_test_cls, y_prob), 4))
+    print("Confusion Matrix:")
+    print(confusion_matrix(y_test_cls, y_pred))
+    print("Time to construct in sec:", round(train_time, 4))
+
+# baseline,  need this for comparison
+dummy_clf = DummyClassifier(strategy="most_frequent")
+evaluate_classification_model("Most FrequentDummy Classifier ", dummy_clf)
+
+# default random forest 
+rf_default = RandomForestClassifier(random_state=42)
+evaluate_classification_model("Default Random Forest Classifier", rf_default)
+
+# experiment 1: varied n_estimators 
+for n in [100, 200, 300, 500]:
+    rf_n = RandomForestClassifier(n_estimators=n, random_state=42)
+    evaluate_classification_model(f"Random Forest Classifier n_estimators={n}", rf_n)
+
+# experiment 2: varied  max_depth 
+for depth in [None, 5, 10, 20]:
+    rf_depth = RandomForestClassifier(max_depth=depth, random_state=42)
+    evaluate_classification_model(f"Random Forest Classifier max_depth={depth}", rf_depth)
 
 # Regression Techniques
 
-# Majority Class Classifier:
+# Dummy Regressor:
 
 # pre-processing the data for regression - reomved id, dropped rows with missing bmi values, and converted categorical variables to numbers
 df_reg = pd.read_csv("healthcare-dataset-stroke-data.csv")
@@ -101,51 +147,128 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=42)
 dummy_regr = DummyRegressor(strategy="mean")
 dummy_regr.fit(X_train, y_train)
 # makes predictions on the data
-y_pred = dummy_regr.predict(X_test)
+dummy_y_pred = dummy_regr.predict(X_test)
 
 # calculates the RMSE and MAE for the Dummy Regressor
-rmse = np.sqrt(mean_squared_error(y_test, y_pred))
-mae = mean_absolute_error(y_test, y_pred)
+dummy_rmse = np.sqrt(mean_squared_error(y_test, dummy_y_pred))
+dummy_mae = mean_absolute_error(y_test, dummy_y_pred)
 
 # prints results
 print("\nDummy Regressor Results:")
-print("RMSE:", rmse)
-print("MAE:", mae)
+print("RMSE:", dummy_rmse)
+print("MAE:", dummy_mae)
 
 # Linear Regression:
 
-reg = LinearRegression()
-reg.fit(X_train, y_train)
+linear_reg = LinearRegression()
 
 # makes predictions on the dataset
-y_pred = reg.predict(X_test)
+linear_y_pred = cross_val_predict(linear_reg, X, y, cv=10)
 
 # calculates the RMSE and MAE 
-rmse = np.sqrt(mean_squared_error(y_test, y_pred))
-mae = mean_absolute_error(y_test, y_pred)
+linear_rmse = np.sqrt(mean_squared_error(y, linear_y_pred))
+linear_mae = mean_absolute_error(y, linear_y_pred)
 # calculates correlation coefficient
-correlation = np.corrcoef(y_test, y_pred)[0, 1]
+linear_correlation = np.corrcoef(y, linear_y_pred)[0, 1]
 
 # print results
 print("\nLinear Regression Results:")
-print("RMSE:", rmse)
-print("MAE:", mae)
-print("Correlation Coefficient:", correlation)
+print("RMSE:", linear_rmse)
+print("MAE:", linear_mae)
+print("Correlation Coefficient:", linear_correlation)
+
+# Experiment 2 - Linear Regression with Scaling:
+linear_reg_scaled = make_pipeline(StandardScaler(), LinearRegression())
+
+linear_y_pred_scaled = cross_val_predict(linear_reg_scaled, X, y, cv=10)
+
+linear_rmse_scaled = np.sqrt(mean_squared_error(y, linear_y_pred_scaled))
+linear_mae_scaled = mean_absolute_error(y, linear_y_pred_scaled)
+linear_corr_scaled = np.corrcoef(y, linear_y_pred_scaled)[0, 1]
+
+print("\nLinear Regression with Scaling Results:")
+print("RMSE:", linear_rmse_scaled)
+print("MAE:", linear_mae_scaled)
+print("Correlation Coefficient:", linear_corr_scaled)
 
 # Regression Trees:
 
 tree_reg = DecisionTreeRegressor(random_state=42)
 # makes predictions using 10-fold cross-validation
-y_pred = cross_val_predict(tree_reg, X, y, cv=10)
+tree_y_pred = cross_val_predict(tree_reg, X, y, cv=10)
 
 # calculates the RMSE and MAE 
-rmse = np.sqrt(mean_squared_error(y, y_pred))
-mae = mean_absolute_error(y, y_pred)
+tree_rmse = np.sqrt(mean_squared_error(y, tree_y_pred))
+tree_mae = mean_absolute_error(y, tree_y_pred)
 # calculates correlation coefficient
-correlation = np.corrcoef(y, y_pred)[0, 1]
+tree_correlation = np.corrcoef(y, tree_y_pred)[0, 1]
 
 # print results
 print("\nDecision Tree Regressor Results (10-fold CV):")
-print("RMSE:", rmse)
-print("MAE:", mae)
-print("Correlation Coefficient:", correlation)
+print("RMSE:", tree_rmse)
+print("MAE:", tree_mae)
+print("Correlation Coefficient:", tree_correlation)
+
+# Experiment 2: Decision Tree (max_depth = 5)
+tree_reg_5 = DecisionTreeRegressor(max_depth=5, random_state=42)
+
+tree_y_pred = cross_val_predict(tree_reg_5, X, y, cv=10)
+
+print("\nDecision Tree (max_depth=5):")
+print("RMSE:", np.sqrt(mean_squared_error(y, tree_y_pred)))
+print("MAE:", mean_absolute_error(y, tree_y_pred))
+print("Correlation:", np.corrcoef(y, tree_y_pred)[0, 1])
+
+# Experiment 3: Decision Tree (max_depth = 10)
+tree_reg_10 = DecisionTreeRegressor(max_depth=10, random_state=42)
+
+tree_y_pred = cross_val_predict(tree_reg_10, X, y, cv=10)
+
+print("\nDecision Tree (max_depth=10):")
+print("RMSE:", np.sqrt(mean_squared_error(y, tree_y_pred)))
+print("MAE:", mean_absolute_error(y, tree_y_pred))
+print("Correlation:", np.corrcoef(y, tree_y_pred)[0, 1])
+
+# Experiment 4: Decision Tree (max_depth = 20)
+tree_reg_20 = DecisionTreeRegressor(max_depth=20, random_state=42)
+
+tree_y_pred = cross_val_predict(tree_reg_20, X, y, cv=10)
+
+print("\nDecision Tree (max_depth=20):")
+print("RMSE:", np.sqrt(mean_squared_error(y, tree_y_pred)))
+print("MAE:", mean_absolute_error(y, tree_y_pred))
+print("Correlation:", np.corrcoef(y, tree_y_pred)[0, 1])
+
+# random forest regressor:
+
+def evaluate_regression_model(model_name, model):
+    start = time.time()
+    #  10-fold cross validation
+    y_pred_cv = cross_val_predict(model, X, y, cv=10)
+    train_time = time.time() - start
+
+    # calculates  RMSE and MAE 
+    rmse = np.sqrt(mean_squared_error(y, y_pred_cv))
+    mae = mean_absolute_error(y, y_pred_cv)
+    #  correlation coefficient
+    correlation = np.corrcoef(y, y_pred_cv)[0, 1]
+
+    print(f"\n{model_name}")
+    print("RMSE:", round(rmse, 4))
+    print("MAE:", round(mae, 4))
+    print("Correlation Coefficient", round(correlation, 4))
+    print("Time to construct (sec):", round(train_time, 4))
+
+#basic random forest regressor
+rf_reg_default = RandomForestRegressor(random_state=42)
+evaluate_regression_model("Default Random Forest Regressor ", rf_reg_default)
+
+#experiment 1: varied n_estimators 
+for n in [100, 200, 300, 500]:
+    rf_reg_n = RandomForestRegressor(n_estimators=n, random_state=42)
+    evaluate_regression_model(f"Random Forest Regressor, n_estimators={n}", rf_reg_n)
+
+#experiment 2: varied max_depth 
+for depth in [None, 5, 10, 20]:
+    rf_reg_depth = RandomForestRegressor(max_depth=depth, random_state=42)
+    evaluate_regression_model(f"Random Forest Regressor, max_depth={depth}", rf_reg_depth)
