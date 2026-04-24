@@ -83,7 +83,7 @@ Run all project experiments in Python, using the following techniques:
 
 ---
 
-### Clustering Techniques
+### Clustering Techniques - HRITHIKA
 
 Use the scikit learn clustering library: https://scikit-learn.org/stable/modules/clustering.html. Note that this page contains very useful illustrations and overviews of the clustering methods, worth reading!
 
@@ -103,7 +103,7 @@ https://scikit-learn.org/stable/modules/generated/sklearn.cluster.DBSCAN.html#sk
 
 ---
 
-### Anomaly Detection using Cluster-based methods
+### Anomaly Detection using Cluster-based methods - SHRIYA
 
 For each of the 3 clustering methods used in this project (k-means, hierarchical, and DBSCAN):
 - Select a clustering obtained in one of your experiments.
@@ -116,7 +116,7 @@ For each of the 3 clustering methods used in this project (k-means, hierarchical
 
 ---
 
-### Clustering Evaluation
+### Clustering Evaluation - ANGELA / HRITHIKA
 
 A major part of this project is to find meaningful ways of evaluating and interpreting the resulting clusters. Devise a variety of approaches to do so, including but not limited to:
 
