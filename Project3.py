@@ -3,6 +3,11 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.cluster import KMeans, AgglomerativeClustering, DBSCAN
 import matplotlib.pyplot as plt
 from sklearn.decomposition import PCA
+from sklearn.metrics import silhouette_score
+from sklearn.metrics import pairwise_distances
+import seaborn as sns
+import matplotlib.pyplot as plt
+import numpy as np
 
 # Pre-processing Techniques
 
@@ -66,3 +71,36 @@ evaluation_df["stroke"] = y
 print(evaluation_df.groupby("cluster").mean())
 # prints the stroke distribution in each cluster
 print(pd.crosstab(evaluation_df["cluster"], evaluation_df["stroke"]))
+
+# Internal Indices
+
+# Sum of Squared Errors (SSE)
+print("K-Means SSE:", kmeans.inertia_)
+
+# Heatmap of the correlation between the distance matrix and the incidence matrix
+
+# Distance matrix
+distance_matrix = pairwise_distances(X_scaled)
+# Incidence matrix (1 if in the same cluster, 0 otherwise)
+incidence_matrix = np.equal.outer(kmeans_labels, kmeans_labels).astype(int)
+
+# Distance heatmap
+plt.figure(figsize=(6,5))
+sns.heatmap(distance_matrix, cmap="viridis")
+plt.title("Distance Matrix")
+plt.show()
+
+# Incidence heatmap
+plt.figure(figsize=(6,5))
+sns.heatmap(incidence_matrix, cmap="coolwarm")
+plt.title("Incidence Matrix (Same Cluster = 1)")
+plt.show()
+
+# Silhouette Scores
+print("K-Means Silhouette:", silhouette_score(X_scaled, kmeans_labels))
+print("Hierarchical Silhouette:", silhouette_score(X_scaled, hierarchical_labels))
+
+if len(set(dbscan_labels)) > 2:
+    print("DBSCAN Silhouette:", silhouette_score(X_scaled, dbscan_labels))
+else:
+    print("DBSCAN Silhouette: not valid")
