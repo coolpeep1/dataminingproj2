@@ -3,13 +3,10 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.cluster import KMeans, AgglomerativeClustering, DBSCAN
 import matplotlib.pyplot as plt
 from sklearn.decomposition import PCA
-from sklearn.metrics import silhouette_score
-from sklearn.metrics import pairwise_distances
+from sklearn.metrics import silhouette_score, pairwise_distances, adjusted_rand_score, normalized_mutual_info_score, adjusted_mutual_info_score, homogeneity_score, completeness_score, v_measure_score
 import seaborn as sns
 import numpy as np
-from sklearn.metrics import adjusted_rand_score
-from sklearn.metrics import normalized_mutual_info_score
-from sklearn.metrics import adjusted_mutual_info_score
+from sklearn.metrics.cluster import contingency_matrix
 
 # Pre-processing Techniques
 
@@ -32,7 +29,7 @@ X = pd.get_dummies(X, drop_first=True)
 scaler = StandardScaler()
 X_scaled = scaler.fit_transform(X)
 
-# Temporary labels for Clustering (waiting for actualy labels from clustering techniques):
+# Temporary labels for clustering (waiting for actual labels from clustering techniques):
 
 # K-Means labels
 kmeans = KMeans(n_clusters=3, random_state=42, n_init=10)
@@ -120,3 +117,29 @@ print("\nK-Means vs DBSCAN:")
 print("ARI:", adjusted_rand_score(kmeans_labels, dbscan_labels))
 print("NMI:", normalized_mutual_info_score(kmeans_labels, dbscan_labels))
 print("AMI:", adjusted_mutual_info_score(kmeans_labels, dbscan_labels))
+
+# External Indices
+
+# K-Means
+print("\nK-Means compared to Stroke")
+print("Homogeneity:", homogeneity_score(y, kmeans_labels))
+print("Completeness:", completeness_score(y, kmeans_labels))
+print("V-measure:", v_measure_score(y, kmeans_labels))
+print("Contingency Matrix:")
+print(contingency_matrix(y, kmeans_labels))
+
+# Hierarchical
+print("\nHierarchical compared to Stroke")
+print("Homogeneity:", homogeneity_score(y, hierarchical_labels))
+print("Completeness:", completeness_score(y, hierarchical_labels))
+print("V-measure:", v_measure_score(y, hierarchical_labels))
+print("Contingency Matrix:")
+print(contingency_matrix(y, hierarchical_labels))
+
+# DBSCAN
+print("\nDBSCAN compared to Stroke")
+print("Homogeneity:", homogeneity_score(y, dbscan_labels))
+print("Completeness:", completeness_score(y, dbscan_labels))
+print("V-measure:", v_measure_score(y, dbscan_labels))
+print("Contingency Matrix:")
+print(contingency_matrix(y, dbscan_labels))
