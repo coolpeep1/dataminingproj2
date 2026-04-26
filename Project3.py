@@ -151,7 +151,9 @@ plt.show()
 print("K-Means Silhouette:", silhouette_score(X_scaled, kmeans_labels))
 print("Hierarchical Silhouette:", silhouette_score(X_scaled, hierarchical_labels))
 
-if len(set(dbscan_labels)) > 2:
+num_dbscan_clusters = len(set(dbscan_labels)) - (1 if -1 in dbscan_labels else 0)
+
+if num_dbscan_clusters >= 2:
     print("DBSCAN Silhouette:", silhouette_score(X_scaled, dbscan_labels))
 else:
     print("DBSCAN Silhouette: not valid")
